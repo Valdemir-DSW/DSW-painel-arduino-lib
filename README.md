@@ -52,4 +52,4 @@ veja um exemplo para fazer um shift light
 
 </pre>
 
-você deverá colocar o  slot zero para ser RPM e isso vai funcionar quando o giro passar 1244 ele vai acender aquele LED que fica na porta 13 do arduino 
+você deverá colocar o  slot 1 para ser RPM e isso vai funcionar quando o giro passar 1244 ele vai acender aquele LED que fica na porta 13 do arduino 
