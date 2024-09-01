@@ -2,6 +2,11 @@
 A biblioteca oficial para se fazer um Painel personalizado com software DSW painel pro
 
 baixe o arquivo ZIP e coloque sua ide arduino de preferência 1.8.x
+caso arduino IDE não consiga reconhecer
+
+![image](https://github.com/user-attachments/assets/97f435ac-160c-4b6a-a895-68f197ff94ef)
+
+pegue essa biblioteca e arraste os seus documentos > arduino > libraries | 
 
 ela é simples apenas 3  funções
 
