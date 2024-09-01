@@ -15,7 +15,7 @@ ela é simples apenas 3  funções
 ".atualizar()" vai procurar por atualizações lá no aplicativo
 
 ".puxa( valor de 0 a 19)" para você puxar os valores dos slots configurados no aplicativo mas lembre que no arduino slots começam de 0 a 19 e no software de 1 a 20 
-ou seja se você configurou os lote 14 aqui no arduíno você vai ter que colocar o número 13 para puxar ele
+ou seja se você configurou o slot 14 aqui no arduíno você vai ter que colocar o número 13 para puxar ele
 
 
 veja um exemplo para fazer um shift light
