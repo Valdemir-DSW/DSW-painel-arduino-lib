@@ -55,7 +55,7 @@ veja um exemplo para fazer um shift light
 você deverá colocar o  slot 1 para ser RPM e isso vai funcionar quando o giro passar 1244 ele vai acender aquele LED que fica na porta 13 do arduino 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 novas atualizações novas funções ! V 1.2.4 
-> cmd < um sistema de envio de comandos foi adicionado percebemos a gente precisava mudar variava toda hora e ficar enviando o código novamente então desenvolvemos esse sistema bem simples
+> cmd < um sistema de envio de comandos foi adicionado percebemos a gente precisava mudar variaveis toda hora e ficar enviando o código novamente então desenvolvemos esse sistema bem simples
  novas funções foram adicionadas observe.
 > OBS . Ainda é necessário chamar a função " dsw.atualizar(); " para que o sistema se atualize !
 > para iniciar o sistema de CMD é bem simples chame essa funçao no setup "   dsw.cmd_vai(comandos, numComandos);" passando uma listagem de comandos o número de comandos existentes lembrando que obrigatoriamente todo o comando deve começar com uma " / " se não ele não vai funcionar!
