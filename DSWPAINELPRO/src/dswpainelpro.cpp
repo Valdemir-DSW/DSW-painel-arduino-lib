@@ -162,7 +162,7 @@ void DSWPainelPro::displayHelp() {
         }
     }
 
-    Serial.println("Disponha de um valor inteiro! Digitando o comando espaço o valor desejado");
+    Serial.println("Disponha de um valor ! Digitando o comando espaço o valor desejado");
     Serial.println("-------------------------");
 }
 
