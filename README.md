@@ -172,4 +172,4 @@ veja um pequeno exemplo completo!
 
 essas foram as novas funcionalidades adicionais colocamos também mais exemplos você pode ir no menu de exemplos do seu arduínoIDE e verá vários exemplos utilizando o comando e a EEPROM ao mesmo tempo
 utilizando o SERVOS também ! 
-
+obs > tem uma função que pode ser muito útil nos testes "dsw.slynky("oi");" slynky pode ser chamada junto a uma string ela vai fazer um log, se você estiver com "cmd" ou "serial view" do arduino IDE aberto na hora que ela for acionada poderá ser visto o que ela enviou!
