@@ -6,8 +6,10 @@ A biblioteca oficial para se fazer um Painel personalizado para jogos de corrida
 obtido em  > https://dsw-wheel.rf.gd/baxada.html?i=1
 
 baixe o arquivo ZIP e coloque sua ide arduino de preferência 1.8.x na nova atualização está funcionando corretamente no IDE V2.x.x
-ou nossa biblioteca é oficial no gerenciador de bibliotecas do IDE veja
+
+nossa biblioteca é oficial no gerenciador de bibliotecas do IDE veja
 ![image](https://github.com/user-attachments/assets/358ba4a6-18a7-4e3c-966d-f5ad565d83a2)
+
 pode instalar por aí normal!
 
 
