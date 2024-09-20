@@ -58,8 +58,11 @@ novas atualizações novas funções ! V 1.2.4
 > cmd < um sistema de envio de comandos foi adicionado percebemos a gente precisava mudar variaveis toda hora e ficar enviando o código novamente então desenvolvemos esse sistema bem simples
  novas funções foram adicionadas observe.
 > OBS . Ainda é necessário chamar a função " dsw.atualizar(); " para que o sistema se atualize !
+> 
 > para iniciar o sistema de CMD é bem simples chame essa funçao no setup "   dsw.cmd_vai(comandos, numComandos);" passando uma listagem de comandos o número de comandos existentes lembrando que obrigatoriamente todo o comando deve começar com uma " / " se não ele não vai funcionar!
+> 
 > para você poder puxar o valor de um comando atual você pode utilizar "dsw.cmd_puxada("/led")" como nesse exemplo passando o nome do comando que ele vai retornar um float
+> 
 > outro problema surgiu como vamos saber quando o comando for validado ? então fizemos um sistema de chamadas defina "dsw.cmd_chamarisco()"  passando uma função que você vai criar no código que ela vai ser chamada toda vez que um comando for validado !
 ela vai passar 2 variáveis uma de "comando" string e um int do "valor" o que você pode fazer para saber qual comando foi enviado observe o exemplo abaixo que também está nos exemplos da biblioteca
 <pre>
