@@ -1,12 +1,13 @@
+> site ofc > https://dsw-wheel.rf.gd/
+> discord  > https://discord.gg/8cFE527m9p
 # DSW-painel-arduino-lib
-A biblioteca oficial para se fazer um Painel personalizado com software DSW painel pro
+A biblioteca oficial para se fazer um Painel personalizado para jogos de corrida com software DSW painel pro 
+obtido em  > https://dsw-wheel.rf.gd/baxada.html?i=1
 
 baixe o arquivo ZIP e coloque sua ide arduino de preferência 1.8.x na nova atualização está funcionando corretamente no IDE V2.x.x
-caso arduino IDE não consiga reconhecer
-
-![image](https://github.com/user-attachments/assets/97f435ac-160c-4b6a-a895-68f197ff94ef)
-
-pegue essa pasta e arraste os seus documentos > arduino > libraries | 
+ou nossa biblioteca é oficial no gerenciador de bibliotecas do IDE veja
+![image](https://github.com/user-attachments/assets/358ba4a6-18a7-4e3c-966d-f5ad565d83a2)
+pode instalar por aí normal!
 
 ela é simples apenas 3  funções
 
