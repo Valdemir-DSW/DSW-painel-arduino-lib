@@ -117,12 +117,17 @@ ela vai passar 2 variáveis uma de "comando" string e um int do "valor" o que vo
 
 </pre>
 outro problema surgiu e nós resolvemos após enviar um comando  processaria vai tudo funcionar até você desligar placa ! Quando ligar novamente todas as configurações feitas vão ser perdidas então como resolver esse problema adicionamos um sistema de manejamento de EEPROM !
+
 Observe é fácil de utilizar
+
 basta iniciar dsw_eeprom "dsw_eeprom eepromManager(variaveis, tipos, 2);" passando uma listagem para ele das variáveis uma listagem dos tipos e o número de variáveis que você colocou
 a listagem de tipos na mesma ordem da listagem das variáveis você vai colocar uma string "i" ou "f" para dizer a tipologia inteiro ou float
 depois tem 2 funções que vão fazer o sistema salvar ou carregar ao salvar e carregar ele faz o salvamento e o carregamento de todas as variáveis ao mesmo tempo
+
 salvar   > eepromManager.eeprom_salvar();
+
 carregar > eepromManager.eeprom_puxar();
+
 veja um pequeno exemplo completo!
 <pre>
 <font color="#5e6d03">#include</font> <font color="#005c5f">&#34;dswpainelpro.h&#34;</font>
