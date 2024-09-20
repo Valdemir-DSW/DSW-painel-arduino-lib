@@ -1,7 +1,7 @@
 # DSW-painel-arduino-lib
 A biblioteca oficial para se fazer um Painel personalizado com software DSW painel pro
 
-baixe o arquivo ZIP e coloque sua ide arduino de preferência 1.8.x
+baixe o arquivo ZIP e coloque sua ide arduino de preferência 1.8.x na nova atualização está funcionando corretamente no IDE V2.x.x
 caso arduino IDE não consiga reconhecer
 
 ![image](https://github.com/user-attachments/assets/97f435ac-160c-4b6a-a895-68f197ff94ef)
