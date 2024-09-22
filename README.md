@@ -11,7 +11,7 @@ nossa biblioteca é oficial no gerenciador de bibliotecas do IDE veja
 ![image](https://github.com/user-attachments/assets/358ba4a6-18a7-4e3c-966d-f5ad565d83a2)
 
 pode instalar por aí normal!
-Espere... espere... detenham a contagem ! caso você não conseguiu conectar a placa no sofware novo void setup coloque o comando '''c++ Serial.begin(115200);'''
+Espere... espere... detenham a contagem ! caso você não conseguiu conectar a placa no sofware novo void setup coloque o comando ''' c++ Serial.begin(115200);'''
 ![image](https://github.com/user-attachments/assets/a9f79b36-7019-405e-a8b1-46be5ae3db82)
 
 
