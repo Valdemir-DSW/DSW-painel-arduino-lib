@@ -12,7 +12,10 @@ nossa biblioteca é oficial no gerenciador de bibliotecas do IDE veja
 
 pode instalar por aí normal!
 
+----------------------------------
+
 Espere... espere... detenham a contagem ! caso você não conseguiu conectar a placa no sofware novo "void setup" coloque o comando  "Serial.begin(115200);"
+
 ![image](https://github.com/user-attachments/assets/a9f79b36-7019-405e-a8b1-46be5ae3db82)
 
 
