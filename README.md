@@ -18,6 +18,7 @@ Espere... espere... detenham a contagem ! caso você não conseguiu conectar a p
 
 ![image](https://github.com/user-attachments/assets/a9f79b36-7019-405e-a8b1-46be5ae3db82)
 
+----------------------------------
 
 ela é simples apenas 3  funções
 
