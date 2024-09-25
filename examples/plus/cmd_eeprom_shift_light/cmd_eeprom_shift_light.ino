@@ -11,7 +11,7 @@
       
       2. "/point"
          - Descrição: Define o ponto de ativação do LED.
-         - Valores aceitáveis: 0 a 255 (onde o LED acenderá se a intensidade for maior ou igual a este valor)
+         - Valores aceitáveis: 0 a ♾ (onde o LED acenderá se a intensidade for maior ou igual a este valor em velocidade do jogo)
       
       3. "/mode"
          - Descrição: Define o modo de operação do LED.

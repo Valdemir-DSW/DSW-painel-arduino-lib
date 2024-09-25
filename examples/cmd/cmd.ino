@@ -15,7 +15,6 @@ void meuCallback(String command, int valuer) {
 
    if (command == "/led"){
       analogWrite(13, (int)dsw.cmd_puxada("/led"));
-      eepromManager.eeprom_salvar();
       /*
 aproveitando o embalo vamos apresentar a função ""slynky"" que serve para você fazer um retorno personalizado para o prompt de comando
 você pode enviar qualquer string de apenas  strings
