@@ -95,7 +95,6 @@ ela vai passar 2 variáveis uma de "comando" string e um int do "valor" o que vo
 
  &nbsp;&nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">command</font> <font color="#434f54">==</font> <font color="#005c5f">&#34;&#47;led&#34;</font><font color="#000000">)</font><font color="#000000">{</font>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">analogWrite</font><font color="#000000">(</font><font color="#000000">13</font><font color="#434f54">,</font> <font color="#000000">(</font><font color="#00979c">int</font><font color="#000000">)</font><font color="#000000">dsw</font><font color="#434f54">.</font><font color="#000000">cmd_puxada</font><font color="#000000">(</font><font color="#005c5f">&#34;&#47;led&#34;</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">eepromManager</font><font color="#434f54">.</font><font color="#000000">eeprom_salvar</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#95a5a6">&#47;*</font>
 <font color="#95a5a6">aproveitando o embalo vamos apresentar a função &#34;&#34;slynky&#34;&#34; que serve para você fazer um retorno personalizado para o prompt de comando</font>
 <font color="#95a5a6">você pode enviar qualquer string de apenas &nbsp;strings</font>
@@ -125,59 +124,6 @@ ela vai passar 2 variáveis uma de "comando" string e um int do "valor" o que vo
 <font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
  &nbsp;<font color="#434f54">&#47;&#47; atualiza os valores mais recentes enviados do Software</font>
  &nbsp;&nbsp;&nbsp;<font color="#000000">dsw</font><font color="#434f54">.</font><font color="#000000">atualizar</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
-<font color="#000000">}</font>
-
-</pre>
-outro problema surgiu e nós resolvemos após enviar um comando  processaria vai tudo funcionar até você desligar placa ! Quando ligar novamente todas as configurações feitas vão ser perdidas então como resolver esse problema adicionamos um sistema de manejamento de EEPROM !
-
-Observe é fácil de utilizar
-
-basta iniciar dsw_eeprom "dsw_eeprom eepromManager(variaveis, tipos, 2);" passando uma listagem para ele das variáveis uma listagem dos tipos e o número de variáveis que você colocou
-a listagem de tipos na mesma ordem da listagem das variáveis você vai colocar uma string "i" ou "f" para dizer a tipologia inteiro ou float
-depois tem 2 funções que vão fazer o sistema salvar ou carregar ao salvar e carregar ele faz o salvamento e o carregamento de todas as variáveis ao mesmo tempo
-
-salvar   > eepromManager.eeprom_salvar();
-
-carregar > eepromManager.eeprom_puxar();
-
-veja um pequeno exemplo completo!
-<pre>
-<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;dswpainelpro.h&#34;</font>
-
-<font color="#434f54">&#47;&#47; Variáveis globais para serem armazenadas na EEPROM ( as variáveis que vamos utilizar no nosso exemplo )</font>
-<font color="#00979c">int</font> <font color="#000000">contador</font> <font color="#434f54">=</font> <font color="#000000">1234</font><font color="#000000">;</font> &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Exemplo de um inteiro</font>
-<font color="#00979c">float</font> <font color="#000000">temperatura</font> <font color="#434f54">=</font> <font color="#000000">23.5</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Exemplo de um float</font>
-
-<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Array de variáveis que serão salvas ( aqui vamos colocar o nome das variáveis que nós vamos querer trabalhar)</font>
- &nbsp;&nbsp;&nbsp;<font color="#00979c">void</font><font color="#434f54">*</font> <font color="#000000">variaveis</font><font color="#000000">[</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font> <font color="#434f54">&amp;</font><font color="#000000">contador</font><font color="#434f54">,</font> <font color="#434f54">&amp;</font><font color="#000000">temperatura</font> <font color="#000000">}</font><font color="#000000">;</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Array com os tipos dessas variáveis (&#39;i&#39; para int, &#39;f&#39; para float) | ( faça com respectividade ou seja a definição deve estar na mesma ordem que você definiu o nome das variáveis)</font>
- &nbsp;&nbsp;&nbsp;<font color="#00979c">char</font> <font color="#000000">tipos</font><font color="#000000">[</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font> <font color="#00979c">&#39;i&#39;</font><font color="#434f54">,</font> <font color="#00979c">&#39;f&#39;</font> <font color="#000000">}</font><font color="#000000">;</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Instancia o objeto para manipular a EEPROM( agora basta chamar a biblioteca com os dados que nós temos definindo nessa ordem a lista de variáveis lista de tipos e também coloque o valor da quantidade de variáveis que você definiu como pode observar nós temos 2 um número 2 foi colocado)</font>
- &nbsp;&nbsp;&nbsp;<font color="#000000">dsw_eeprom</font> <font color="#000000">eepromManager</font><font color="#000000">(</font><font color="#000000">variaveis</font><font color="#434f54">,</font> <font color="#000000">tipos</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font>
-<font color="#434f54">&#47;&#47;=========================================================================================================================================</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Salva os valores na EEPROM</font>
- &nbsp;&nbsp;&nbsp;<font color="#000000">eepromManager</font><font color="#434f54">.</font><font color="#000000">eeprom_salvar</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; toda vez que ela for chamada ela vai pegar o valor das variáveis e salvar na eeprom mesmo que o Arduino for desligado os valores não são perdidos</font>
-<font color="#434f54">&#47;&#47;=========================================================================================================================================</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Puxa os valores da EEPROM para as variáveis</font>
- &nbsp;&nbsp;&nbsp;<font color="#000000">eepromManager</font><font color="#434f54">.</font><font color="#000000">eeprom_puxar</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; toda vez que acionada ela vai pegar aqueles valores que estão salvo na eeprom e redefinir eles nas variáveis respectivas, aquelas que foram definidas no início do código obvio</font>
-<font color="#434f54">&#47;&#47;=========================================================================================================================================</font>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#95a5a6">&#47;*</font>
-<font color="#95a5a6">sugestão de uso&lt;</font>
-<font color="#95a5a6">você pode usar em conjunto do CMD inclusive foi feito para isso no caso !</font>
-<font color="#95a5a6">Ao receber um novo comando e processado utilize essa biblioteca para salvar</font>
-<font color="#95a5a6">os comandos após processar os comandos chame a função</font>
-<font color="#95a5a6"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{.eeprom_salvar();}</font>
-<font color="#95a5a6">que ela vai fazer o salvamento e &nbsp;na função &#34;setup&#34; chame</font>
-<font color="#95a5a6"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{.eeprom_puxar();}</font>
-<font color="#95a5a6">Que toda vez que o arduino religar ele vai puxar o valor das variáveis na última salvação!</font>
-<font color="#95a5a6"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&#47;</font>
-<font color="#000000">}</font>
-
-<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
- &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Não é necessário fazer nada no loop para este exemplo</font>
 <font color="#000000">}</font>
 
 </pre>
