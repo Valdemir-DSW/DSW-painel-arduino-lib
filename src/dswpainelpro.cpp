@@ -1,206 +1,331 @@
 #include "dswpainelpro.h"
+
 #include <Arduino.h>
 #include <EEPROM.h>
 
-DSWPainelPro::DSWPainelPro() : lastUpdateTime(0) {
-    // Construtor
+DSWPainelPro::DSWPainelPro()
+    : lastUpdateTime(0), _commands(nullptr), _values(nullptr), _numCommands(0), _callback(nullptr) {
+    resetValues();
+}
+
+DSWPainelPro::~DSWPainelPro() {
+    releaseCommandStorage();
 }
 
 void DSWPainelPro::vai(long baudRate) {
-    Serial.begin(115200);
-    // Inicialize a estrutura de dados, se necessário
+    Serial.begin(baudRate);
+    lastUpdateTime = millis();
+    resetValues();
 }
+
 void DSWPainelPro::cmd_vai(String commands[], int size) {
-    // Verifica se a lista de comandos é válida e se o tamanho é positivo
     if (commands == nullptr || size <= 0) {
-        Serial.println("Erro: Lista de comandos inválida ou tamanho incorreto.");
+        Serial.println("Erro: lista de comandos invalida.");
         return;
     }
 
-    // Libera a memória antiga, se já estiver alocada
-    if (_commands != nullptr) {
-        delete[] _commands;
-        _commands = nullptr;
-    }
+    releaseCommandStorage();
 
-    // Aloca um novo array para armazenar os comandos
     _commands = new String[size];
-    _numCommands = size; // Define o número de comandos
-
-    // Copia os comandos para o array local e inicializa os valores
-    for (int i = 0; i < size; i++) {
-        _commands[i] = commands[i]; // Copia o comando para o array local
-        Serial.print("Comando ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.println(_commands[i]);  // Exibe cada comando recebido
-        
-        delay(500);  // Adiciona um delay de 500 milissegundos (ajuste conforme necessário)
-    }
-
-    // Inicializa os valores associados
     _values = new float[size];
-    for (int i = 0; i < size; i++) {
-        _values[i] = 0.0;
+    _numCommands = size;
+
+    for (int i = 0; i < size; ++i) {
+        _commands[i] = commands[i];
+        _values[i] = 0.0f;
     }
 
-    Serial.println("Comandos configurados com sucesso.");
+    Serial.print("Comandos configurados: ");
+    Serial.println(_numCommands);
 }
-
-
 
 void DSWPainelPro::atualizar() {
-    unsigned long currentTime = millis();
-    if (Serial.available()) {
-    String dados = Serial.readStringUntil('\n');
-    if (dados.startsWith("/")) {
-        dados.trim();  // Remove espaços em branco extras
-
-      // Verifica se o comando é /help
-      if (dados.equals("/help")) {
-        displayHelp();
-      } else if (dados.startsWith("/")) {
-        processCommand(dados);
-      } else {
-        Serial.println("Comando inválido. Digite /help para obter ajuda.");
-      }
-
-     
+    if (!Serial.available()) {
+        return;
     }
-    else
-    {
-       int valor = 0;
-      int contador = 0;
 
-      // Analisa a string recebida e armazena os valores na lista
-      for (int i = 0; i < dados.length(); i++) {
-        char c = dados.charAt(i);
-        if (c == ',') {
-          values[contador++] = valor;
-          valor = 0;
-        } else {
-          valor = valor * 10 + (c - '0');
+    String input = Serial.readStringUntil('\n');
+    input.trim();
+    if (!input.length()) {
+        return;
+    }
+
+    if (input.startsWith("/")) {
+        if (input.equalsIgnoreCase("/help")) {
+            displayHelp();
+            return;
         }
-      }
-      values[contador] = valor;  // Adiciona o último valor
-
-      index = (index + 1) % 20;  // Atualiza o índice para a próxima posição
-
+        processCommand(input);
+        return;
     }
-   
-  }
-}
-dsw_eeprom::dsw_eeprom(void* variables[], char typeArray[], int count) {
-  varCount = count;
-  vars = variables;    // Armazena o array de ponteiros para variáveis
-  types = typeArray;   // Armazena os tipos das variáveis (int ou float)
-}
-void dsw_eeprom::eeprom_salvar() {
- int address = 0;
 
-  for (int i = 0; i < varCount; i++) {
-    if (types[i] == 'i') {  // Se for um inteiro
-      int* intVar = (int*)vars[i];  // Faz o casting para (int*)
-      EEPROM.put(address, *intVar);
-      address += sizeof(int);
-    } else if (types[i] == 'f') {  // Se for um float
-      float* floatVar = (float*)vars[i];  // Faz o casting para (float*)
-      EEPROM.put(address, *floatVar);
-      address += sizeof(float);
-    }
-  }
+    processTelemetryFrame(input);
 }
 
-void dsw_eeprom::eeprom_puxar() {
-  
-  int address = 0;
-
-  for (int i = 0; i < varCount; i++) {
-    if (types[i] == 'i') {  // Se for um inteiro
-      int* intVar = (int*)vars[i];  // Faz o casting para (int*)
-      EEPROM.get(address, *intVar);
-      address += sizeof(int);
-    } else if (types[i] == 'f') {  // Se for um float
-      float* floatVar = (float*)vars[i];  // Faz o casting para (float*)
-      EEPROM.get(address, *floatVar);
-      address += sizeof(float);
+void DSWPainelPro::processTelemetryFrame(String input) {
+    input.trim();
+    if (!input.length()) {
+        return;
     }
-  }
+
+    input.replace(';', ',');
+
+    int slot = 0;
+    int start = 0;
+    while (slot < SLOT_COUNT && start <= input.length()) {
+        int separator = input.indexOf(',', start);
+        String token = separator == -1 ? input.substring(start) : input.substring(start, separator);
+        values[slot++] = normalizeSlotToken(token);
+
+        if (separator == -1) {
+            break;
+        }
+        start = separator + 1;
+    }
+
+    while (slot < SLOT_COUNT) {
+        values[slot++] = "0";
+    }
+
+    lastUpdateTime = millis();
+}
+
+String DSWPainelPro::normalizeSlotToken(const String& token) const {
+    String text = token;
+    text.trim();
+    if (!text.length()) {
+        return "0";
+    }
+
+    bool hasDigit = false;
+    bool hasDecimal = false;
+    String normalized;
+    normalized.reserve(text.length());
+
+    for (unsigned int i = 0; i < text.length(); ++i) {
+        char c = text.charAt(i);
+        if ((c == '+' || c == '-') && normalized.length() == 0) {
+            normalized += c;
+            continue;
+        }
+        if (c >= '0' && c <= '9') {
+            normalized += c;
+            hasDigit = true;
+            continue;
+        }
+        if ((c == '.' || c == ',') && !hasDecimal) {
+            normalized += '.';
+            hasDecimal = true;
+            continue;
+        }
+        if (c == ' ') {
+            continue;
+        }
+        break;
+    }
+
+    if (!hasDigit) {
+        return "0";
+    }
+
+    if (normalized == "-" || normalized == "+" || normalized == "." || normalized == "-." || normalized == "+.") {
+        return "0";
+    }
+
+    return normalized;
 }
 
 String DSWPainelPro::puxa(int slot) {
-    if (slot < 0 || slot >= 20) {
-        return "0000";
+    if (slot < 0 || slot >= SLOT_COUNT) {
+        return "0";
     }
     return values[slot];
 }
 
 void DSWPainelPro::slynky(const String& pp) {
-    Serial.println(pp);  // Imprime a String na serial
-    // Não retorna nada, pois a função é void
+    Serial.println(pp);
 }
+
 void DSWPainelPro::displayHelp() {
     Serial.println("------------------------");
-    Serial.println("Comandos disponíveis:");
+    Serial.println("Comandos disponiveis:");
 
-    // Verifica se o array de comandos foi corretamente configurado
     if (_commands == nullptr || _numCommands <= 0) {
-        Serial.println("Nenhum comando disponível.");
+        Serial.println("Nenhum comando disponivel.");
     } else {
-        // Lista os comandos disponíveis
-        for (int i = 0; i < _numCommands; i++) {
+        for (int i = 0; i < _numCommands; ++i) {
             Serial.print("Comando ");
             Serial.print(i);
             Serial.print(": ");
-            
-            // Certifica-se de que o comando não seja uma string vazia
-            if (_commands[i].length() > 0) {
-                Serial.println(_commands[i]);
-            } else {
-                Serial.println("[Comando inválido]");
-            }
+            Serial.println(_commands[i]);
         }
     }
 
-    Serial.println("Disponha de um valor ! Digitando o comando espaço o valor desejado");
-    Serial.println("-------------------------");
+    Serial.println("Formatos aceitos:");
+    Serial.println("/comando valor");
+    Serial.println("/comando=valor");
+    Serial.println("/comando:valor");
+    Serial.println("Maiusculas, espacos, hifens e underscores sao tolerados.");
+    Serial.println("------------------------");
 }
 
 void DSWPainelPro::processCommand(String input) {
-  int spaceIndex = input.indexOf(' ');
-
-  if (spaceIndex != -1) {
-    // Extrai o comando e o valor  
-    String command = input.substring(0, spaceIndex);
-    float value = input.substring(spaceIndex + 1).toFloat();
-
-    // Procura o comando na lista de comandos
-    for (int i = 0; i < _numCommands; i++) {
-      if (command.equals(_commands[i])) {
-        _values[i] = value;  // Salva o valor na posição correspondente
-        Serial.println(command + " atualizado para " + value);
-         if (_callback) {
-                    _callback(command, value);
-                }
+    String command;
+    float value = 0.0f;
+    if (!extractCommandAndValue(input, command, value)) {
+        Serial.println("Formato invalido. Use /comando valor.");
         return;
-      }
     }
 
-    Serial.println("Comando não encontrado. Digite /help para ver os comandos disponíveis.");
-  } else {
-    Serial.println("Formato inválido. Use: /comando valor.");
-  }
-}
-void DSWPainelPro::cmd_chamarisco(CommandCallback callback) {
-    _callback = callback;  // Define o callback
-}
-// Função que retorna o valor associado a um comando
-float DSWPainelPro::cmd_puxada(String commandName) {
-  for (int i = 0; i < _numCommands; i++) {
-    if (commandName.equals(_commands[i])) {
-      return _values[i];
+    int index = findCommandIndex(command);
+    if (index < 0) {
+        Serial.println("Comando nao encontrado. Digite /help para ver os comandos.");
+        return;
     }
-  }
-  // Se o comando não for encontrado, retorna -1 como valor padrão de erro
-  return -1;
+
+    _values[index] = value;
+    Serial.print(_commands[index]);
+    Serial.print(" atualizado para ");
+    Serial.println(value, 3);
+
+    if (_callback != nullptr) {
+        _callback(_commands[index], value);
+    }
+}
+
+bool DSWPainelPro::extractCommandAndValue(const String& input, String& command, float& value) {
+    String text = input;
+    text.trim();
+    if (!text.length()) {
+        return false;
+    }
+
+    if (text.startsWith("/")) {
+        text.remove(0, 1);
+    }
+    text.trim();
+
+    int separator = -1;
+    for (unsigned int i = 0; i < text.length(); ++i) {
+        char c = text.charAt(i);
+        if (c == ' ' || c == '=' || c == ':') {
+            separator = static_cast<int>(i);
+            break;
+        }
+    }
+
+    if (separator < 0) {
+        return false;
+    }
+
+    command = text.substring(0, separator);
+    String rawValue = text.substring(separator + 1);
+    command.trim();
+    rawValue.trim();
+    rawValue.replace(',', '.');
+
+    if (!command.length() || !rawValue.length()) {
+        return false;
+    }
+
+    value = rawValue.toFloat();
+    return true;
+}
+
+void DSWPainelPro::cmd_chamarisco(CommandCallback callback) {
+    _callback = callback;
+}
+
+float DSWPainelPro::cmd_puxada(String commandName) {
+    int index = findCommandIndex(commandName);
+    if (index < 0 || _values == nullptr) {
+        return -1.0f;
+    }
+    return _values[index];
+}
+
+int DSWPainelPro::findCommandIndex(const String& commandName) const {
+    if (_commands == nullptr || _numCommands <= 0) {
+        return -1;
+    }
+
+    String wanted = canonicalizeCommand(commandName);
+    for (int i = 0; i < _numCommands; ++i) {
+        if (canonicalizeCommand(_commands[i]) == wanted) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+String DSWPainelPro::canonicalizeCommand(const String& text) const {
+    String normalized = text;
+    normalized.trim();
+    normalized.toLowerCase();
+
+    if (normalized.startsWith("/")) {
+        normalized.remove(0, 1);
+    }
+
+    normalized.replace(" ", "");
+    normalized.replace("_", "");
+    normalized.replace("-", "");
+
+    return normalized;
+}
+
+void DSWPainelPro::resetValues() {
+    for (int i = 0; i < SLOT_COUNT; ++i) {
+        values[i] = "0";
+    }
+}
+
+void DSWPainelPro::releaseCommandStorage() {
+    if (_commands != nullptr) {
+        delete[] _commands;
+        _commands = nullptr;
+    }
+    if (_values != nullptr) {
+        delete[] _values;
+        _values = nullptr;
+    }
+    _numCommands = 0;
+}
+
+dsw_eeprom::dsw_eeprom(void* variables[], char typeArray[], int count) {
+    varCount = count;
+    vars = variables;
+    types = typeArray;
+}
+
+void dsw_eeprom::eeprom_salvar() {
+    int address = 0;
+
+    for (int i = 0; i < varCount; i++) {
+        if (types[i] == 'i') {
+            int* intVar = (int*)vars[i];
+            EEPROM.put(address, *intVar);
+            address += sizeof(int);
+        } else if (types[i] == 'f') {
+            float* floatVar = (float*)vars[i];
+            EEPROM.put(address, *floatVar);
+            address += sizeof(float);
+        }
+    }
+}
+
+void dsw_eeprom::eeprom_puxar() {
+    int address = 0;
+
+    for (int i = 0; i < varCount; i++) {
+        if (types[i] == 'i') {
+            int* intVar = (int*)vars[i];
+            EEPROM.get(address, *intVar);
+            address += sizeof(int);
+        } else if (types[i] == 'f') {
+            float* floatVar = (float*)vars[i];
+            EEPROM.get(address, *floatVar);
+            address += sizeof(float);
+        }
+    }
 }
